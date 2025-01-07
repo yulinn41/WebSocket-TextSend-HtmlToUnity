@@ -1,14 +1,26 @@
 const http = require('http');
 const WebSocket = require('ws');
 
-// 創建 HTTP 伺服器
-const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end('WebSocket server is running.');
-});
 
-// 創建 WebSocket 伺服器
+const express = require("express");
+const path = require("path");
+
+// 使用 Render 或 Heroku 指定的 PORT 或預設為 8080
+const PORT = process.env.PORT || 8080;
+
+// 創建 Express 應用
+const app = express();
+
+// 提供靜態檔案 (將 public 資料夾設為根目錄)
+app.use(express.static(path.join(__dirname, "public")));
+
+// 創建 HTTP 伺服器，並將 Express 設置為 handler
+const server = http.createServer(app);
+
+// 在 HTTP 伺服器上創建 WebSocket 伺服器
 const wss = new WebSocket.Server({ server });
+
+
 
 wss.on('connection', ws => {
     console.log('客戶端已連接');
@@ -23,7 +35,6 @@ wss.on('connection', ws => {
 });
 
 // 啟動伺服器
-const PORT = 8080;
 server.listen(PORT, () => {
     console.log(`伺服器運行於 http://localhost:${PORT}`);
 });
