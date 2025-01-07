@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+    <title>光映新屋，古厝迎春</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', sans-serif;
+            min-height: 100vh;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+        }
+
+        .page {
+            display: none;
+            width: 100%;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            overflow-y: auto;
+            gap: 0.5rem;
+            overflow: hidden;
+            /* 隱藏超出範圍的內容 */
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            gap: 0.5rem;
+            /* 隱藏超出範圍的內容 */
+        }
+
+        /* Home page specific styles */
+        .home-page {
+            width: auto;
+            object-fit: contain;
+        }
+
+        .home-logo {
+            height: 13vh;
+            margin-top: 0.5rem;
+        }
+
+        .home-small-text {
+            height: 3vh;
+            margin-top: 1rem;
+        }
+
+        .home-main-text {
+            height: 17vh;
+            margin-top: -0.5rem;
+            margin-bottom: -0.5rem;
+        }
+
+        .home-second-text {
+            height: 6vh;
+            margin-top: 0;
+        }
+
+        /*.home-character {
+            height: 65vh;
+            margin-top: 0;
+            position: absolute;
+            bottom: 0;
+            z-index: -1;
+        }*/
+        .character-container {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 65vh;
+            display: flex;
+            justify-content: center;
+            /* 水平置中 */
+            align-items: flex-end;
+            /* 保持角色圖片底部對齊 */
+            z-index: -1;
+        }
+
+        .home-character {
+            position: relative;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .light-effect {
+            position: absolute;
+            top: 70%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(0deg);
+            height: 100%;
+            z-index: 0;
+            /* 放在角色後面 */
+            transition: transform 1.5s ease-in-out;
+        }
+
+        /* CSS 部分 */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            /* 改為 0，這樣初始位置才正確 */
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgb(18, 25, 54);
+            z-index: 9999;
+            transform: translateY(-100%);
+            /* 初始位置在上方 */
+            transition: transform 1s ease-in-out;
+            pointer-events: none;
+            /* 防止干擾點擊事件 */
+        }
+
+        .button-container {
+            height: 11vh;
+            /* 高度由视口高度决定 */
+            width: 100%;
+            /* 父容器宽度 */
+            display: flex;
+            align-items: center;
+            /* 垂直居中 */
+            justify-content: center;
+            /* 水平居中 */
+            overflow: hidden;
+            /* 防止内容溢出 */
+            position: relative;
+            /* 设置为相对定位 */
+        }
+
+        .startbtn {
+            background: url('pic/01pagebutton.png') no-repeat center;
+        }
+
+        .endbtn {
+
+            background: url('pic/03pagebutton.png') no-repeat center;
+
+        }
+
+        .custom-button {
+            /* 背景图片居中 */
+            background-size: contain;
+            /* 确保图片比例不变 */
+            aspect-ratio: 956 / 202;
+            /* 设置宽高比 */
+            width: auto;
+            /* 由高度和宽高比决定宽度 */
+            height: 95%;
+            /* 填满父容器高度 */
+            max-width: 80%;
+            /* 限制宽度不超过父容器 */
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: block;
+            /* 块级元素确保布局正常 */
+        }
+
+        .custom-button:hover {
+            transform: scale(1.05);
+        }
+
+        .a-container {
+            display: flex;
+            /* 设置为 Flex 布局 */
+            flex-direction: column;
+            /* 子元素垂直排列 */
+            align-items: center;
+            /* 水平居中子元素 */
+            width: 100%;
+            /* 父容器宽度 */
+            height: 80vh;
+            /* 自动适应高度 */
+            margin: 0 auto;
+            /* 确保整体居中对齐 */
+            padding: 0px 30px 20px 30px;
+            /* 可选：为父容器添加内边距 */
+        }
+
+        .form-page-main-text {
+            width: auto;
+            max-width: 100%;
+            height: 15%;
+            object-fit: contain;
+            z-index: 1;
+            margin-top: -1rem;
+        }
+
+        .form-container {
+            background: #FFF1DE;
+            padding: 30px;
+            border-radius: 18px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+            height: auto;
+            /* 设置为 Flex 布局 */
+            display: flex;
+            flex-direction: column;
+            /* 子元素垂直排列 */
+            /* 水平居中 */
+            justify-content: center;
+            /* 垂直居中 */
+            padding-top: 6rem;
+            /* 初始值 */
+            transition: margin-top;
+            /* 過渡效果 */
+        }
+
+        /* form-page page specific styles */
+        .form-page-logo {
+            width: auto;
+            height: 6vh;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            max-width: 90%;
+            object-fit: contain;
+        }
+
+        /* 設定 .form-page-small-text 為定位參考點 */
+        .relative-container {
+            position: relative;
+            /* 確保子元素以它為定位參考 */
+            display: inline-block;
+            place-items: center;
+            /* 水平與垂直置中 */
+
+        }
+
+        .formpage-top {
+            /* 確保包裹內容 */
+            height: 11vh;
+            margin-top: -1rem;
+            margin-bottom: -0.5rem;
+        }
+
+        .form-page-small-text {
+            display: block;
+            /* 確保圖片作為塊級元素，正常布局 */
+            position: relative;
+            /* 作為定位參考點 */
+            width: auto;
+            max-width: 90%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+
+        .submit-button {
+            background-color: #C62D35;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+            text-align: center;
+            /* 确保文本居中 */
+            margin: 0 auto;
+            /* 自动左右外边距实现居中 */
+            display: block;
+            /* 确保按钮是块级元素 */
+        }
+
+        .submit-button:hover {
+            background-color: #A31F24;
+            transform: scale(1.05);
+        }
+
+        .char-counter {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /*page3------------------------------------------------------------*/
+
+        .thank-text {
+            height: 15vh;
+            margin-top: 1rem;
+        }
+
+        /*clouddd------------------------------------------------------------*/
+        .cloud-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            /* 確保不干擾其他互動 */
+            overflow: hidden;
+            z-index: -1;
+            /* 保證雲在背景層 */
+
+        }
+
+        .cloud-1 {
+            bottom: -30%;
+            left: -25%;
+            width: 35%;
+            position: absolute;
+        }
+
+        .cloud-2 {
+            top: 60%;
+            right: -25%;
+            width: 40%;
+            position: absolute;
+        }
+
+        .page2-cloud-1 {
+            top: 36%;
+            left: -16%;
+            width: 23%;
+            position: absolute;
+        }
+
+        .page2-cloud-2 {
+            top: 20%;
+            right: -28%;
+            width: 35%;
+            position: absolute;
+        }
+
+        .page3-cloud-1 {
+            bottom: -15%;
+            left: -28%;
+            width: 40%;
+            position: absolute;
+        }
+
+        .page3-cloud-2 {
+            top: 53%;
+            right: -40%;
+            width: 50%;
+            position: absolute;
+        }
+
+        @media (min-width: 1023px) {
+           /*<!-- page2 -->*/
+            .form-page-logo {
+                margin-bottom: 2rem;
+            }
+
+            .form-page-small-text {
+                height: 11vh;
+            }
+        }
+
+        @media (max-width: 475px) {
+            /*<!-- page2 -->*/
+
+            .form-container {
+                padding-top: 4rem;
+            }
+
+            .formpage-top {
+                /* 確保包裹內容 */
+                height: 10vh;
+                margin-top: -1rem;
+            }
+        }
+
+        @media (max-width: 345px) {
+
+            /*<!-- page1 -->*/
+            .home-logo {
+                height: 10vh;
+                margin-top: 0.5rem;
+            }
+
+            .form-page-small-text {
+                height: 8vh;
+            }
+
+            .home-small-text {
+                height: 3vh;
+                margin-top: 2rem;
+            }
+
+            .home-main-text {
+                height: 15vh;
+                margin-top: -0.5rem;
+                margin-bottom: -0.5rem;
+            }
+        }
+
+        @media (min-aspect-ratio: 4/3) and (max-aspect-ratio: 128/75) {
+            .form-container {
+                /*background: #ff9500;*/
+                padding-top: 3rem;
+            }
+        }
+
+        /* 橫向模式 */
+        @media (orientation: landscape)and (min-aspect-ratio: 128.1/75) {
+
+            .a-container {
+                transform: scale(0.6);
+                transform-origin: top center;
+                /* 確保與頂部對齊 */
+            }
+            .form-container {
+                /*background: #8500a7;*/
+                padding-top: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 首頁 -->
+    <div id="home" class="page active">
+
+        <div class="relative-container">
+            <img src="pic/01pageLogo.png" alt="Logo" class="home-page home-logo ">
+            <img src="pic/01pageCloud1.png" alt="Cloud 1" class="cloud-1 animated-image-left">
+        </div>
+        <img src="pic/01pageSmallText.png" alt="Small Text" class=" home-page home-small-text ">
+        <div class="relative-container">
+            <img src="pic/01pageMainText.png" alt="Main Text" class=" home-page home-main-text">
+            <img src="pic/01pageCloud2.png" alt="Cloud 2" class="cloud-2 animated-image-right">
+        </div>
+        <img src="pic/01pageSecondText.png" alt="Second Text" class=" home-page home-second-text">
+        <div class="button-container">
+            <button class="custom-button startbtn" onclick=""></button>
+        </div>
+        <div class="character-container">
+            <img src="pic/01pageCharactor.png" alt="Character" class="home-page home-character">
+            <img src="pic/light.png" alt="Light Effect" class="light-effect">
+        </div>
+
+    </div>
+
+    <!-- 表單頁面 -->
+    <div id="form-page" class="page">
+
+        <img src="pic/02pageLogo.png" alt="Logo" class="form-page-logo">
+        <!-- Cloud -->
+        <div class="formpage-top relative-container">
+            <img src="pic/02pageSmallText.png" alt="Small Text" class="form-page-small-text">
+            <img src="pic/01pageCloud1.png" alt="Cloud 1" class="page2-cloud-1">
+            <img src="pic/01pageCloud2.png" alt="Cloud 2" class="page2-cloud-2 ">
+
+        </div>
+        <!-- formlist -->
+        <div id="a-container" class="a-container">
+            <img src="pic/02pageMainText.png" alt="Main Text" class="form-page-main-text">
+            <div class="form-container">
+                <div class="form-group">
+                    <label for="nickname">輸入暱稱</label>
+                    <input type="text" id="nickname" maxlength="8">
+                    <div class="char-counter">剩餘字數：<span id="nickname-counter">8</span></div>
+                </div>
+                <div class="form-group">
+                    <label for="message">想說的話</label>
+                    <textarea id="message" maxlength="20" rows="3"></textarea>
+                    <div class="char-counter">剩餘字數：<span id="message-counter">20</span></div>
+                </div>
+                <button class="submit-button" onclick="submitForm()">確認</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 最終頁面 -->
+    <div id="final-page" class="page">
+        <div class="relative-container">
+            <img src="pic/01pageLogo.png" alt="Logo" class="home-page home-logo ">
+            <img src="pic/01pageCloud1.png" alt="Cloud 1" class="page3-cloud-1 animated-image-left">
+        </div>
+        <div class="relative-container">
+            <img src="pic/01pageMainText.png" alt="Main Text" class=" home-page home-main-text">
+            <img src="pic/01pageCloud2.png" alt="Cloud 2" class="page3-cloud-2 animated-image-right">
+        </div>
+        <img src="pic/03pageThank.png" alt="Thank Text" class=" home-page thank-text">
+        <div class="button-container">
+            <button class="custom-button endbtn" onclick=""></button>
+        </div>
+        <div class="character-container">
+            <img src="pic/01pageCharactor.png" alt="Character" class="home-character">
+            <img src="pic/light.png" alt="Light Effect" class="light-effect">
+        </div>
+
+    </div>
+
+    <script>
+        // 頁面切換函數
+        function showPage(pageId) {
+            // 移除所有頁面的 active 狀態
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+                resetAnimations(page);
+            });
+
+            const targetPage = document.getElementById(pageId);
+            targetPage.classList.add('active');
+
+            // 為目標頁面添加動畫
+            applyAnimations(targetPage);
+
+        }
+        // 避免動畫進行中重複觸發
+        let isTransitioning = false;
+
+        // 重置動畫
+        function resetAnimations(page) {
+            // 原有的重置動畫邏輯
+            const animatedElements = page.querySelectorAll('.animated-image-left, .animated-image-right');
+            animatedElements.forEach(element => {
+                element.style.animation = 'none';
+                element.offsetHeight; // 觸發重繪
+                element.style.animation = null;
+            });
+        }
+
+        // 應用動畫
+        function applyAnimations(page) {
+            // 原有的應用動畫邏輯
+            const animatedElements = page.querySelectorAll('.animated-image-left, .animated-image-right');
+            animatedElements.forEach(element => {
+                if (element.classList.contains('animated-image-left')) {
+                    element.style.animation = 'slideInLeft 1s ease-out forwards';
+                } else if (element.classList.contains('animated-image-right')) {
+                    element.style.animation = 'slideInRight 1s ease-out forwards';
+                }
+            });
+        }
+
+
+
+        function handlePageTransition(targetPageId) {
+            return new Promise((resolve) => {
+                // 獲取當前頁面和其 light-effect
+                const currentPage = document.querySelector('.page.active');
+                const currentLightEffect = currentPage.querySelector('.light-effect');
+
+                // 獲取目標頁面
+                const targetPage = document.getElementById(targetPageId);
+
+                // 創建過渡容器（如果不存在）
+                let pageTransition = document.querySelector('.page-transition');
+                if (!pageTransition) {
+                    pageTransition = document.createElement('div');
+                    pageTransition.classList.add('page-transition');
+                    document.body.appendChild(pageTransition);
+                }
+
+                // 1. 當前頁面的 light 旋轉
+                if (currentLightEffect) {
+                    currentLightEffect.style.transform = 'translate(-50%, -50%) rotate(120deg)';
+                }
+
+                // 2. 等待 light 旋轉完成後顯示藍色過渡效果
+                setTimeout(() => {
+                    pageTransition.style.transform = 'translateY(0)';
+
+                    // 3. 等待過渡效果完成後切換頁面
+                    setTimeout(() => {
+                        // 移除所有頁面的 active 狀態並重置動畫
+                        document.querySelectorAll('.page').forEach(page => {
+                            page.classList.remove('active');
+                            resetAnimations(page);
+                        });
+
+                        // 顯示目標頁面並應用動畫
+                        targetPage.classList.add('active');
+                        applyAnimations(targetPage);
+
+                        // 處理特殊頁面邏輯
+                        if (targetPageId === 'form-page') {
+                            updateFormContainerPosition();
+                        } else if (targetPageId === 'home') {
+                            clearFormFields();
+                        }
+
+                        // 重置目標頁面的 light 初始狀態
+                        const targetLightEffect = targetPage.querySelector('.light-effect');
+                        if (targetLightEffect) {
+                            targetLightEffect.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+                        }
+
+                        // 4. 短暫延遲後移除藍色過渡效果
+                        setTimeout(() => {
+                            pageTransition.style.transform = 'translateY(-100%)';
+
+                            // 5. 等待過渡效果完全消失
+                            setTimeout(() => {
+                                // 6. 重置當前頁面的 light
+                                if (currentLightEffect) {
+                                    currentLightEffect.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+                                }
+                                resolve();
+                            }, 800);
+                        }, 100);
+                    }, 1200);
+                }, 800);
+            });
+        }
+
+        function safeHandlePageTransition(targetPageId) {
+            if (isTransitioning) return;
+            isTransitioning = true;
+
+            handlePageTransition(targetPageId)
+                .finally(() => {
+                    setTimeout(() => {
+                        isTransitioning = false;
+                    }, 1000);
+                });
+        }
+
+        // 綁定事件監聽器
+        document.addEventListener('DOMContentLoaded', function () {
+            const startBtn = document.querySelector('.startbtn');
+            const endBtn = document.querySelector('.endbtn');
+
+            if (startBtn) {
+                startBtn.addEventListener('click', () => safeHandlePageTransition('form-page'));
+            }
+
+            if (endBtn) {
+                endBtn.addEventListener('click', () => safeHandlePageTransition('home'));
+            }
+        });
+        // 清空表單欄位
+        function clearFormFields() {
+            const nicknameInput = document.getElementById('nickname');
+            const messageInput = document.getElementById('message');
+            // 清空文字輸入框和文字區域
+            if (nicknameInput) nicknameInput.value = '';
+            if (messageInput) messageInput.value = '';
+            // 重置剩餘字數顯示
+            const nicknameCounter = document.getElementById('nickname-counter');
+            const messageCounter = document.getElementById('message-counter');
+
+            if (nicknameCounter) nicknameCounter.textContent = '8';
+            if (messageCounter) messageCounter.textContent = '20';
+        }
+
+        // 重置動畫的透明度與類別
+        function resetAnimations(page) {
+            page.querySelectorAll('.animated-image-left, .animated-image-right').forEach(el => {
+                el.style.opacity = '0'; // 重置透明度
+                el.classList.remove('animate__animated', 'animate__bounceInLeft', 'animate__bounceInRight');
+            });
+        }
+
+        // 為動畫元素應用動畫
+        function applyAnimations(targetPage) {
+            targetPage.querySelectorAll('.animated-image-left').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.style.transition = 'opacity 1s ease-in';
+                    el.style.opacity = '1';
+                    el.classList.add('animate__animated', 'animate__bounceInLeft');
+                }, 100);
+            });
+
+            targetPage.querySelectorAll('.animated-image-right').forEach(el => {
+                el.style.opacity = '0';
+                setTimeout(() => {
+                    el.style.transition = 'opacity 1s ease-in';
+                    el.style.opacity = '1';
+                    el.classList.add('animate__animated', 'animate__bounceInRight');
+                }, 100);
+            });
+        }
+
+        // DOM 加載完成時初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            const activePage = document.querySelector('.page.active');
+
+            if (activePage) {
+                applyAnimations(activePage);
+            }
+            updateFormContainerPosition();
+            updateBackgroundImage();
+        });
+
+
+        function updateFormContainerPosition() {
+            const mainText = document.querySelector('.form-page-main-text');
+            const formContainer = document.querySelector('.form-container');
+            if (mainText && formContainer) {
+                formContainer.style.marginTop = `${-mainText.offsetHeight / 2}px`;
+            }
+        }
+
+        function updateBackgroundImage() {
+            const body = document.body;
+            if (window.innerWidth <= 768) {
+                body.style.backgroundImage = "url('pic/commonBG(1080x1920).png')";
+            } else if (window.innerWidth <= 1023) {
+                body.style.backgroundImage = "url('pic/commonBG(1200x1920).png')";
+            } else {
+                body.style.backgroundImage = "url('pic/commonBG(1920x1080).png')";
+            }
+        }
+
+
+
+        window.addEventListener('resize', () => {
+            updateBackgroundImage();
+        });
+
+
+
+        // 表單提交
+        function submitForm() {
+            const nickname = document.getElementById('nickname').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            /*記得補回來
+            if (!nickname || !message) {
+                alert('請填寫所有欄位');
+                return;
+            }
+                */
+            // 清空欄位
+
+            showPage('final-page');
+
+        }
+        // 字數計數器
+        function updateCounter(input, counterId, maxLength) {
+            const counter = document.getElementById(counterId);
+            const remaining = maxLength - input.value.length;
+            counter.textContent = remaining;
+        }
+
+        // 監聽輸入事件
+        document.getElementById('nickname').addEventListener('input', function () {
+            updateCounter(this, 'nickname-counter', 8);
+        });
+
+        document.getElementById('message').addEventListener('input', function () {
+            updateCounter(this, 'message-counter', 20);
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>
