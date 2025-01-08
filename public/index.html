@@ -193,6 +193,11 @@
             /* 可选：为父容器添加内边距 */
         }
 
+        .mes-container {
+            padding: 30px 30px 80px 30px;
+            /* 可选：为父容器添加内边距 */
+        }
+
         .form-page-main-text {
             width: auto;
             max-width: 100%;
@@ -296,6 +301,8 @@
             /* 自动左右外边距实现居中 */
             display: block;
             /* 确保按钮是块级元素 */
+            z-index: 20;
+            /* 明確提高按鈕的層級 */
         }
 
         .submit-button:hover {
@@ -314,6 +321,7 @@
         .thank-text {
             height: 15vh;
             margin-top: 1rem;
+
         }
 
         /*clouddd------------------------------------------------------------*/
@@ -373,8 +381,155 @@
             position: absolute;
         }
 
+
+
+        .message-display-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 35px;
+            margin-bottom: 0rem;
+        }
+
+        .message-box {
+            padding: 5px;
+            border-radius: 2px;
+            max-width: 500px;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            /* 垂直排列內部內容 */
+            justify-content: flex-start;
+            /* 頂部對齊 */
+            align-items: center;
+            /* 水平置中 */
+            height: 100%;
+            /* 填滿可用高度 */
+        }
+
+        .message-content {
+            background-image: linear-gradient(10deg, #e7d6c0, #e7d6c0, #e7d6c0, #FFF1DE, #fef6ea);
+            padding: 30px 60px 30px 60px;
+            height: 100%;
+
+            width: 100%;
+            max-width: 500px;
+            /* 可選：設置最大寬度 */
+            display: flex;
+            overflow: hidden;
+            flex-direction: column;
+            clip-path: inset(0 0 0 0);
+            /* 初始完整顯示 */
+            transition: clip-path 0.8s ease-out, opacity 0.8s ease-out;
+            /* 平滑過渡 */
+            opacity: 1;
+            /* 初始完全可見 */
+
+        }
+
+        .message-content.hidden {
+            clip-path: inset(35% 0 0 0);
+            /* 從上往下裁剪 */
+            opacity: 0;
+            /* 同時淡出 */
+
+        }
+
+        .message-display {
+            text-align: center;
+            /* Center text */
+            margin-bottom: 1rem;
+        }
+
+        .nickname-display {
+            text-align: right;
+            /* Right align text */
+        }
+
+        .label {
+            color: #000000;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+
+        #display-nickname,
+        #display-message {
+            color: #000000;
+            font-size: 1.3em;
+        }
+
+        .t01 {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            /* 父容器高度 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* 確保內容垂直與水平居中 */
+            left: 0%;
+            z-index: 5;
+        }
+
+        .polygon1,
+        .polygon2 {
+            position: absolute;
+            /* 讓兩個三角形都以絕對位置相對於父容器 */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* 設定相同的寬與高 */
+        }
+
+        .polygon2 {
+            background: #ab2626;
+            clip-path: polygon(100% 0, 100% 100%, 0 100%, 0% 50%);
+            z-index: 0;
+        }
+
+        .polygon1 {
+            background: #ab2626;
+            clip-path: polygon(0 0, 100% 50%, 100% 100%, 0 100%);
+            z-index: 0;
+        }
+
+        .polygon3 {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            /* 正方形大小 */
+            height: 70%;
+            background-color: #942020;
+            /* 正方形顏色 */
+            z-index: -1;
+            /* 最底層 */
+        }
+
+        .Cbutton-container {
+            margin-top: auto;
+            /* 將按鈕推到最底部 */
+            display: flex;
+            justify-content: center;
+            /* 按鈕水平置中 */
+            align-items: center;
+            /* 按鈕垂直置中 */
+            width: 100%;
+            /* 滿寬 */
+            padding: 50px;
+            /* 可選：增加內部間距 */
+        }
+
         @media (min-width: 1023px) {
-           /*<!-- page2 -->*/
+
+            /*<!-- page2 -->*/
             .form-page-logo {
                 margin-bottom: 2rem;
             }
@@ -396,6 +551,15 @@
                 height: 10vh;
                 margin-top: -1rem;
             }
+            .message-content {
+                padding: 30px 30px 30px 30px;
+            }
+
+            #display-nickname,
+            #display-message {
+                font-size: 1em;
+            }
+
         }
 
         @media (max-width: 345px) {
@@ -420,6 +584,8 @@
                 margin-top: -0.5rem;
                 margin-bottom: -0.5rem;
             }
+
+
         }
 
         @media (min-aspect-ratio: 4/3) and (max-aspect-ratio: 128/75) {
@@ -437,6 +603,7 @@
                 transform-origin: top center;
                 /* 確保與頂部對齊 */
             }
+
             .form-container {
                 /*background: #8500a7;*/
                 padding-top: 2rem;
@@ -447,7 +614,7 @@
 
 <body>
     <!-- 首頁 -->
-    <div id="home" class="page active">
+    <div id="home" class="page">
 
         <div class="relative-container">
             <img src="pic/01pageLogo.png" alt="Logo" class="home-page home-logo ">
@@ -499,6 +666,41 @@
         </div>
 
     </div>
+    <!-- 確認頁面 -->
+    <div id="confirm-page" class="page  active">
+        <img src="pic/02pageLogo.png" alt="Logo" class="form-page-logo">
+        <!-- Cloud -->
+        <div class="formpage-top relative-container">
+            <img src="pic/02pageSmallText.png" alt="Small Text" class="form-page-small-text">
+            <img src="pic/01pageCloud1.png" alt="Cloud 1" class="page2-cloud-1">
+            <img src="pic/01pageCloud2.png" alt="Cloud 2" class="page2-cloud-2 ">
+
+        </div>
+
+        <div id="mes-container" class="a-container  mes-container ">
+
+            <div class="message-box">
+                <div class="message-content">
+                    <div class="message-display">
+                        <span id="display-message">這是示例訊息內容這是示例訊息內容這是示例訊息內容</span>
+                    </div>
+                    <div class="nickname-display">
+                        <span id="display-nickname">我的鳴子我的鳴子</span>
+                    </div>
+
+                </div>
+                <div class="Cbutton-container">
+                    <button class="submit-button confirmbtn" onclick="">提交</button>
+                </div>
+                <div class="t01">
+                    <div class="polygon1"></div>
+                    <div class="polygon2"></div>
+                </div>
+                <div class="polygon3"></div>
+            </div>
+
+        </div>
+    </div>
 
     <!-- 最終頁面 -->
     <div id="final-page" class="page">
@@ -510,7 +712,10 @@
             <img src="pic/01pageMainText.png" alt="Main Text" class=" home-page home-main-text">
             <img src="pic/01pageCloud2.png" alt="Cloud 2" class="page3-cloud-2 animated-image-right">
         </div>
+
         <img src="pic/03pageThank.png" alt="Thank Text" class=" home-page thank-text">
+
+
         <div class="button-container">
             <button class="custom-button endbtn" onclick=""></button>
         </div>
@@ -522,6 +727,46 @@
     </div>
 
     <script>
+        function handleSubmitButton() {
+            const messageContent = document.querySelector('.message-content');
+            if (!messageContent) return;
+
+            // 清除內聯樣式以觸發動畫
+            messageContent.style.clipPath = '';
+            messageContent.style.opacity = '';
+
+            // 添加動畫類名，觸發收納效果
+            messageContent.classList.add('hidden');
+
+            // 等待動畫完成後切換頁面
+            setTimeout(() => {
+                showPage('final-page'); // 切換頁面
+            }, 1000); // 確保動畫完成後切換
+        }
+
+
+        // 綁定按鈕點擊事件
+        document.querySelector('.confirmbtn').addEventListener('click', handleSubmitButton);
+
+        // 在頁面初始化時重置內容狀態
+
+        function resetMessageContent() {
+            const messageContent = document.querySelector('.message-content');
+            if (messageContent) {
+                messageContent.classList.remove('hidden'); // 移除動畫類名
+
+                // 強制觸發重繪以確保過渡效果
+                void messageContent.offsetWidth;
+
+                // 恢復初始樣式
+                // 移除可能影響寬度的內聯樣式
+                messageContent.style.clipPath = '';
+                messageContent.style.opacity = '';
+                messageContent.style.width = ''; // 確保寬度還原到 CSS 預設值
+            }
+        }
+
+
         // 頁面切換函數
         function showPage(pageId) {
             // 移除所有頁面的 active 狀態
@@ -532,7 +777,10 @@
 
             const targetPage = document.getElementById(pageId);
             targetPage.classList.add('active');
-
+            // 特殊邏輯：重置 confirm-page 的內容
+            if (pageId === 'confirm-page') {
+                resetMessageContent();
+            }
             // 為目標頁面添加動畫
             applyAnimations(targetPage);
 
@@ -753,11 +1001,15 @@
                 alert('請填寫所有欄位');
                 return;
             }
-                */
-            // 清空欄位
+            */
 
-            showPage('final-page');
+            // 儲存輸入的內容到最終頁面
+            document.getElementById('display-nickname').textContent = nickname;
+            document.getElementById('display-message').textContent = message;
 
+            // 清空欄位並切換頁面
+            showPage('confirm-page');
+            //safeHandlePageTransition('confirm-page');
         }
         // 字數計數器
         function updateCounter(input, counterId, maxLength) {
