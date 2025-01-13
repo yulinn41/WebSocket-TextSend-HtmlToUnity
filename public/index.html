@@ -168,7 +168,9 @@
 
         // 確認按鈕提交邏輯
         // 確認按鈕提交邏輯
+
         function handleSubmitButton() {
+
             const messageContent = document.querySelector('.message-content');
             if (!messageContent) return;
 
@@ -406,9 +408,12 @@
             bindPageButtons([
                 { selector: '.startbtn', targetPageId: 'form-page' },
                 { selector: '.endbtn', targetPageId: 'home' },
-                { selector: '.confirmbtn', targetPageId: 'final-page' } // 確保 confirmbtn 綁定
             ]);
-
+            // 單獨為 confirmbtn 綁定 handleSubmitButton
+            const confirmBtn = document.querySelector('.confirmbtn');
+            if (confirmBtn) {
+                confirmBtn.addEventListener('click', handleSubmitButton);
+            }
             const activePage = document.querySelector('.page.active');
             if (activePage) {
                 applyAnimations(activePage);
