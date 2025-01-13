@@ -194,14 +194,20 @@
             if (ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify(payload));
                 console.log('已發送資料:', payload);
-            } else {
-                console.error('WebSocket 連接未開啟');
-            }
 
-            // 等待動畫完成後切換頁面
-            setTimeout(() => {
-                showPage('final-page'); // 切換頁面
-            }, 1000); // 確保動畫完成後切換
+                // 動畫與頁面切換
+                const messageContent = document.querySelector('.message-content');
+                if (messageContent) {
+                    messageContent.classList.add('hidden');
+                }
+
+                setTimeout(() => {
+                    showPage('final-page');
+                }, 1000);
+            } else {
+                alert('祈福尚未傳送，遊戲未連接');
+                console.error('WebSocket 未連接，無法發送資料');
+            }
         }
 
         // 重置 message-content 狀態
