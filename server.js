@@ -34,13 +34,22 @@ wss.on("connection", (ws) => {
             console.log("收到消息:", msgString);
 
             // Unity 客戶端連接
-            if (message === "Unity") {
+            if (msgString === "Unity") {
                 console.log("Unity 客戶端已認證");
                 unitySocket = ws; // 保存 Unity 連接
                 broadcastToClients("InteractiveConnected"); // 廣播 Unity 已連接
                 console.log("Unity 客戶端已成功連接");
             }
-
+            // 處理接收到的文本數據並轉發給 Unity
+            else {
+                if (unitySocket && unitySocket.readyState === WebSocket.OPEN) {
+                    unitySocket.send(message.toString()); // 直接將文本數據發送到 Unity
+                    console.log("數據已發送到 Unity");
+                } else {
+                    ws.send("Unity 未連接，無法轉發數據");
+                    console.log("Unity 未連接，無法轉發數據");
+                }
+            }
 
         } catch (error) {
             console.error("處理消息時發生錯誤:", error);
