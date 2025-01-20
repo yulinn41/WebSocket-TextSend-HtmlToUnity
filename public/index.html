@@ -54,7 +54,7 @@
                 <div class="form-group">
                     <label for="nickname">輸入暱稱</label>
                     <input type="text" id="nickname">
-                    <div class="char-counter">剩餘字數：<span id="nickname-counter">6</span></div>
+                    <div class="char-counter">剩餘字數：<span id="nickname-counter">5</span></div>
                 </div>
                 <div class="form-group">
                     <label for="message">想說的話</label>
@@ -167,7 +167,6 @@
         }
 
         // 確認按鈕提交邏輯
-        // 確認按鈕提交邏輯
 
         function handleSubmitButton() {
             const messageContent = document.querySelector('.message-content');
@@ -180,35 +179,35 @@
                 alert('請填寫所有欄位');
                 return;
             }
+            if (ws.readyState !== WebSocket.OPEN) {
+                alert("上傳失敗，請檢查伺服器連接！");
+                return; // 阻止繼續執行
+            }
 
+            // 檢查 Unity 是否連接
+            if (!unityConnected) {
+                alert("上傳失敗，遊戲尚未連接！");
+                return; // 阻止繼續執行
+            }
             // 清除內聯樣式以觸發動畫
             messageContent.style.clipPath = '';
             messageContent.style.opacity = '';
 
-            // 添加動畫類名，觸發收納效果
-            messageContent.classList.add('hidden');
-
             // 直接將訊息轉為純文本格式
             const messageText = `Nickname: ${nickname}, Message: ${message}`;
 
-            // 發送純文本資料至 WebSocket
-            if (ws.readyState === WebSocket.OPEN) {
-                ws.send(messageText);  // 發送純文本資料
-                console.log('已發送資料:', messageText);
+            ws.send(messageText);  // 發送純文本資料
+            console.log('已發送資料:', messageText);
 
-                // 動畫與頁面切換
-                const messageContent = document.querySelector('.message-content');
-                if (messageContent) {
-                    messageContent.classList.add('hidden');
-                }
-
-                setTimeout(() => {
-                    showPage('final-page');
-                }, 1000);
-            } else {
-                alert('祈福尚未傳送，遊戲未連接');
-                console.error('WebSocket 未連接，無法發送資料');
+            // 動畫與頁面切換
+            if (messageContent) {
+                messageContent.classList.add('hidden');
             }
+
+            setTimeout(() => {
+                showPage('final-page');
+            }, 1000);
+
         }
 
 
