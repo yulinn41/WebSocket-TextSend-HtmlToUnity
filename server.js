@@ -45,15 +45,42 @@ wss.on("connection", (ws) => {
     
                 if (match) {
                     const nickname = match[1]; // 提取的 nickname
-                    const messageText = match[2]; // 提取的 message
+                    let messageText = match[2]; // 提取的 message
+    
+                    // 處理 messageText，根據字符長度插入換行符
+                    const maxLengths = [4, 5, 3]; // 期望的長度限制
+                    let formattedMessage = '';
+                    let currentLine = '';
+                    let currentLength = 0;  // 追蹤當前行的長度
+    
+                    for (let i = 0; i < messageText.length; i++) {
+                        const char = messageText[i];
+                        const charLength = /[\u0020-\u007E]/.test(char) ? 0.5 : 1;  // ASCII 佔 0.5，其他佔 1
+    
+                        currentLength += charLength;
+                        currentLine += char;
+    
+                        // 檢查是否需要換行
+                        if (currentLength >= maxLengths[0]) {
+                            formattedMessage += currentLine + '\n'; // 添加換行符
+                            currentLine = '';
+                            currentLength = 0;  // 重置長度計數器
+                            maxLengths.shift();  // 刪除已經處理的長度限制
+                        }
+                    }
+    
+                    // 加上剩下的字符（如果有）
+                    if (currentLine.length > 0) {
+                        formattedMessage += currentLine;
+                    }
     
                     // 格式化要發送的文本
-                    const formattedMessage = `Nickname: ${nickname}, Message: ${messageText}`;
+                    const finalMessage = `Nickname: ${nickname}, Message: ${formattedMessage}`;
     
                     // 如果 Unity 客戶端已連接且連接狀態是開啟的
                     if (unitySocket && unitySocket.readyState === WebSocket.OPEN) {
-                        unitySocket.send(formattedMessage); // 直接將格式化後的文本數據發送到 Unity
-                        console.log("數據已發送到 Unity:", formattedMessage);
+                        unitySocket.send(finalMessage); // 直接將格式化後的文本數據發送到 Unity
+                        console.log("數據已發送到 Unity:", finalMessage);
                     } else {
                         ws.send("Unity 未連接，無法轉發數據");
                         console.log("Unity 未連接，無法轉發數據");
@@ -70,6 +97,7 @@ wss.on("connection", (ws) => {
             ws.send("處理消息錯誤"); // 發送錯誤訊息給客戶端
         }
     });
+    
     
 
     // 客戶端斷開處理

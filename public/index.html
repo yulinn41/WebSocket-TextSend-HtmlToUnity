@@ -59,7 +59,7 @@
                 <div class="form-group">
                     <label for="message">想說的話</label>
                     <textarea id="message" rows="3"></textarea>
-                    <div class="char-counter">剩餘字數：<span id="message-counter">15</span></div>
+                    <div class="char-counter">剩餘字數：<span id="message-counter">12</span></div>
                 </div>
                 <button class="submit-button" onclick="submitForm()">確認</button>
             </div>
@@ -337,8 +337,8 @@
             const nicknameCounter = document.getElementById('nickname-counter');
             const messageCounter = document.getElementById('message-counter');
 
-            if (nicknameCounter) nicknameCounter.textContent = '6';
-            if (messageCounter) messageCounter.textContent = '15';
+            if (nicknameCounter) nicknameCounter.textContent = '5';
+            if (messageCounter) messageCounter.textContent = '12';
         }
 
         // 更新表單容器位置
@@ -432,11 +432,11 @@
             window.addEventListener('resize', updateBackgroundImage);
 
             document.getElementById('nickname').addEventListener('input', function () {
-                updateCounter(this, 'nickname-counter', 6);
+                updateCounter(this, 'nickname-counter', 5);
             });
 
             document.getElementById('message').addEventListener('input', function () {
-                updateCounter(this, 'message-counter', 15);
+                updateCounter(this, 'message-counter', 12);
             });
         }
 
