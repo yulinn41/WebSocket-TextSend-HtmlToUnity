@@ -31,14 +31,14 @@ wss.on("connection", (ws) => {
             const msgString = message.toString();
 
             // 獲取短消息（處理長度小於 20 的情況）
-            const shortMsgString = msgString.length > 20 ? msgString.substring(0, 20) : msgString;
-            console.log("收到消息:", shortMsgString);
+            console.log("收到消息:", msgString);
 
             // Unity 客戶端連接
             if (message === "Unity") {
                 console.log("Unity 客戶端已認證");
                 unitySocket = ws; // 保存 Unity 連接
                 broadcastToClients("InteractiveConnected"); // 廣播 Unity 已連接
+                console.log("Unity 客戶端已成功連接");
             }
             // 處理接收到的文本數據並轉發給 Unity
             else {
@@ -53,7 +53,7 @@ wss.on("connection", (ws) => {
 
         } catch (error) {
             console.error("處理消息時發生錯誤:", error);
-            ws.send(JSON.stringify({ status: "error", message: "無法處理消息" }));
+            ws.send("處理消息錯誤"); // 發送錯誤訊息給客戶端
         }
     });
 
