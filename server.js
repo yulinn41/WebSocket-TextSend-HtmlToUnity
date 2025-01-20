@@ -40,15 +40,21 @@ wss.on("connection", (ws) => {
                 broadcastToClients("InteractiveConnected"); // 廣播 Unity 已連接
                 console.log("Unity 客戶端已成功連接");
             }
-            // 處理接收到的文本數據並轉發給 Unity
-            else {
+            // 處理接收到的文本數據並轉發給 Unity，只處理正確的文本格式
+            else if (/^Nickname: .+, Message: .+$/.test(msgString)) {
+                // 格式化要發送的文本
+                const formattedMessage = `Nickname: ${nickname}, Message: ${messageText}`;
+
+                // 如果 Unity 客戶端已連接且連接狀態是開啟的
                 if (unitySocket && unitySocket.readyState === WebSocket.OPEN) {
-                    unitySocket.send(message.toString()); // 直接將文本數據發送到 Unity
-                    console.log("數據已發送到 Unity");
+                    unitySocket.send(formattedMessage); // 直接將格式化後的文本數據發送到 Unity
+                    console.log("數據已發送到 Unity:", formattedMessage);
                 } else {
                     ws.send("Unity 未連接，無法轉發數據");
                     console.log("Unity 未連接，無法轉發數據");
                 }
+            } else {
+                console.log("收到的消息格式不符合要求");
             }
 
         } catch (error) {
