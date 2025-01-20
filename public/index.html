@@ -170,7 +170,6 @@
         // 確認按鈕提交邏輯
 
         function handleSubmitButton() {
-
             const messageContent = document.querySelector('.message-content');
             if (!messageContent) return;
 
@@ -189,11 +188,13 @@
             // 添加動畫類名，觸發收納效果
             messageContent.classList.add('hidden');
 
-            // 發送資料至 WebSocket
-            const payload = { nickname, message };
+            // 直接將訊息轉為純文本格式
+            const messageText = `Nickname: ${nickname}, Message: ${message}`;
+
+            // 發送純文本資料至 WebSocket
             if (ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify(payload));
-                console.log('已發送資料:', payload);
+                ws.send(messageText);  // 發送純文本資料
+                console.log('已發送資料:', messageText);
 
                 // 動畫與頁面切換
                 const messageContent = document.querySelector('.message-content');
@@ -209,6 +210,7 @@
                 console.error('WebSocket 未連接，無法發送資料');
             }
         }
+
 
         // 重置 message-content 狀態
         function resetMessageContent() {

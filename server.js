@@ -34,36 +34,23 @@ wss.on("connection", (ws) => {
             const shortMsgString = msgString.length > 20 ? msgString.substring(0, 20) : msgString;
             console.log("收到消息:", shortMsgString);
 
-            // 嘗試解析 JSON 數據
-            let data;
-            try {
-                data = JSON.parse(msgString);
-                console.log("收到的 JSON 資料:", data);
-            } catch (error) {
-                console.error("無法解析 JSON:", msgString);
-            }
-
             // Unity 客戶端連接
-            if (msgString === "Unity") {
+            if (message === "Unity") {
                 console.log("Unity 客戶端已認證");
                 unitySocket = ws; // 保存 Unity 連接
                 broadcastToClients("InteractiveConnected"); // 廣播 Unity 已連接
             }
-            // 處理 JSON 數據並轉發給 Unity
-            else if (data && typeof data === "object") {
+            // 處理接收到的文本數據並轉發給 Unity
+            else {
                 if (unitySocket && unitySocket.readyState === WebSocket.OPEN) {
-                    unitySocket.send(JSON.stringify(data)); // 將 JSON 數據發送到 Unity
+                    unitySocket.send(message.toString()); // 直接將文本數據發送到 Unity
                     console.log("數據已發送到 Unity");
                 } else {
-                    ws.send("無法轉發數據，Unity 未連接");
+                    ws.send("Unity 未連接，無法轉發數據");
                     console.log("Unity 未連接，無法轉發數據");
                 }
             }
-            // 處理其他消息
-            else {
-                ws.send(`伺服器回應: ${msgString}`);
-                console.log("已回應消息: ", `伺服器回應: ${msgString}`);
-            }
+
         } catch (error) {
             console.error("處理消息時發生錯誤:", error);
             ws.send(JSON.stringify({ status: "error", message: "無法處理消息" }));
