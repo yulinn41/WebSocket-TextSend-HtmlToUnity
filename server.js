@@ -25,14 +25,11 @@ wss.on("connection", (ws) => {
     if (unitySocket && unitySocket.readyState === WebSocket.OPEN) {
         ws.send("InteractiveConnected");
     }
-
     ws.on("message", (message) => {
         try {
             const msgString = message.toString();
-
-            // 獲取短消息（處理長度小於 20 的情況）
             console.log("收到消息:", msgString);
-
+    
             // Unity 客戶端連接
             if (msgString === "Unity") {
                 console.log("Unity 客戶端已認證");
@@ -42,26 +39,38 @@ wss.on("connection", (ws) => {
             }
             // 處理接收到的文本數據並轉發給 Unity，只處理正確的文本格式
             else if (/^Nickname: .+, Message: .+$/.test(msgString)) {
-                // 格式化要發送的文本
-                const formattedMessage = `Nickname: ${nickname}, Message: ${messageText}`;
-
-                // 如果 Unity 客戶端已連接且連接狀態是開啟的
-                if (unitySocket && unitySocket.readyState === WebSocket.OPEN) {
-                    unitySocket.send(formattedMessage); // 直接將格式化後的文本數據發送到 Unity
-                    console.log("數據已發送到 Unity:", formattedMessage);
+                // 提取 nickname 和 message
+                const regex = /^Nickname:\s*(.*),\s*Message:\s*(.*)$/;
+                const match = msgString.match(regex);
+    
+                if (match) {
+                    const nickname = match[1]; // 提取的 nickname
+                    const messageText = match[2]; // 提取的 message
+    
+                    // 格式化要發送的文本
+                    const formattedMessage = `Nickname: ${nickname}, Message: ${messageText}`;
+    
+                    // 如果 Unity 客戶端已連接且連接狀態是開啟的
+                    if (unitySocket && unitySocket.readyState === WebSocket.OPEN) {
+                        unitySocket.send(formattedMessage); // 直接將格式化後的文本數據發送到 Unity
+                        console.log("數據已發送到 Unity:", formattedMessage);
+                    } else {
+                        ws.send("Unity 未連接，無法轉發數據");
+                        console.log("Unity 未連接，無法轉發數據");
+                    }
                 } else {
-                    ws.send("Unity 未連接，無法轉發數據");
-                    console.log("Unity 未連接，無法轉發數據");
+                    console.log("消息解析失敗，格式不正確");
                 }
             } else {
                 console.log("收到的消息格式不符合要求");
             }
-
+    
         } catch (error) {
             console.error("處理消息時發生錯誤:", error);
             ws.send("處理消息錯誤"); // 發送錯誤訊息給客戶端
         }
     });
+    
 
     // 客戶端斷開處理
     ws.on("close", () => {
